@@ -9,25 +9,121 @@ import java.util.regex.Pattern;
  */
 public class GetSymbol {
 
-    static void parseSrcByRegex() {
+
+
+    static void parseSrc() {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("in.src"))) {
             in = bufferedReader;
             while ((src = in.readLine()) != null) {
                 src = src.trim();
-                index=0;
-                initialMatcheres(src);
-                while (index < src.length()) {
+                end=0;
+                while (end < src.length()) {
                     String tmp = getWord();
                     if (!tmp.matches("\\s")) {
                         SymTable.insertEntry(tmp);
                     }
                 }
-                index = 0;
+                end=0;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    static String getWord() {
+        tmpS.append(getChar());
+        if (isDigit(tmpS)) {
+            concat();
+            while (end<src.length() && isDigit(tmpS.append(getChar()))) {
+                concat();
+            }
+            if (tmpS.toString().equals(".")) {
+                concat();
+                while (end<src.length() && isDigit(tmpS.append(getChar()))) {
+                    concat();
+                }
+            }
+            if (end < src.length()-1) {//要加判断条件是因为如果不加，会在结束前把end减一，可能陷入死循环
+                retract();
+            }
+            return returnWord();
+        }
+
+        if (isLetter(tmpS)) {
+            concat();
+            while (end < src.length() && isDigitOrLetter(tmpS.append(getChar()))) {
+                concat();
+            }
+            if (end < src.length()-1) {//要加判断条件是因为如果不加，会在结束前把end减一，可能陷入死循环
+                retract();
+            }
+            return returnWord();
+        }
+
+        if (isSingleOperaor(tmpS)) {
+            concat();
+            return returnWord();
+        }
+
+        if (isSpace(tmpS)) {
+            concat();
+            return returnWord();
+        }
+
+        tmpS.delete(0,tmpS.length());
+        result.delete(0,result.length());
+        return "error";
+    }
+
+    static char getChar() {
+        System.out.println(end+" "+src.charAt(end));
+        return src.charAt(end++);
+    }
+
+    static void retract() {
+        end--;
+        tmpS.delete(0,tmpS.length());
+    }
+
+    static void concat() {
+        result.append(tmpS);
+        tmpS.delete(0,tmpS.length());
+        System.out.println("result:"+result+";");
+    }
+
+    static boolean isDigit(StringBuffer stringBuffer) {
+        return stringBuffer.toString().matches("[0-9]");
+    }
+
+    static boolean isLetter(StringBuffer stringBuffer) {
+        return stringBuffer.toString().matches("[a-zA-Z]");
+    }
+
+    static boolean isDigitOrLetter(StringBuffer stringBuffer) {
+        return stringBuffer.toString().matches("[a-zA-Z0-9]");
+    }
+
+    static boolean isSingleOperaor(StringBuffer stringBuffer) {
+        return stringBuffer.toString().matches("[-*/=#+;,()]");
+    }
+
+    static boolean isSpace(StringBuffer stringBuffer) {
+        return stringBuffer.toString().matches("\\s");
+    }
+
+    private static String returnWord() {
+        String tmp = result.toString();
+        result.delete(0,result.length());
+        System.out.println("result after delete:"+result+";");
+        return tmp;
+    }
+
+    /**
+     * end标记当前单词最后一个字符在src中的索引
+     */
+    static int end=-1;
+    static StringBuffer tmpS = new StringBuffer();
+    static StringBuffer result=new StringBuffer();
 
     static void initialMatcheres(String psrc) {
         System.out.println("next to parse:"+psrc);
@@ -36,7 +132,7 @@ public class GetSymbol {
         }
     }
 
-    static String getWord() {
+    static String getWordByRegex() {
         String csrc = src.substring(index);
         initialMatcheres(csrc);
         for (Matcher matcher : matchers) {
@@ -50,8 +146,28 @@ public class GetSymbol {
         return null;
     }
 
-    static String [] strings = {"[([1-9][0-9]*.?[0-9]*)||(0.[0-9]+)]","[a-zA-Z][a-zA-Z0-9]*",
-            "[-*/=#<>(\\+)(:=)(<=)(>=)(\\;)(\\,)(\\()(\\))]", "\\s"};
+    static void parseSrcByRegex() {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("in.src"))) {
+            in = bufferedReader;
+            while ((src = in.readLine()) != null) {
+                src = src.trim();
+                index=0;
+                initialMatcheres(src);
+                while (index < src.length()) {
+                    String tmp = getWordByRegex();
+                    if (!tmp.matches("\\s")) {
+                        SymTable.insertEntry(tmp);
+                    }
+                }
+                index = 0;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static String [] strings = {"[0-9][0-9]*\\.?[0-9]*","[a-zA-Z][a-zA-Z0-9]*",
+            "[-*/=#<>+;,()]|:=|<=|>=", "\\s"};
     static Pattern [] patterns = new Pattern[4];
     static Matcher [] matchers = new Matcher[4];
     static {
@@ -64,5 +180,5 @@ public class GetSymbol {
     static int index;
     static BufferedReader in = null;
     static String src=null;
-    static StringBuffer result=new StringBuffer();
+
 }

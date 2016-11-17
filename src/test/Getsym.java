@@ -1,5 +1,8 @@
 package test;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by hcq on 2016/11/2.
  */
@@ -9,8 +12,10 @@ public class Getsym {
     int Max_ID = 10;
     int Max_Length = 50;
     String strToken = "";
-    String[] Keyword = {"CONST", "VAR", "PROCEDURE", "END", "ODD", "BEGIN", "IF", "THEN", "CALL", "WHILE", "DO", "READ", "WRITE"};
-    String[] Class = {" ", "CONSTSYM", "VARSYM", "PROCEDURESYM", "ENDSYM", "ODDSYM", "BEGINSYM", "IFSYM", "THENSYM", "CALLSYM", "WHILESYM", "DOSYM", "READSYM", "WRITESYM"};
+    String[] Keyword = {"CONST", "VAR", "PROCEDURE", "END", "ODD", "BEGIN", "IF", "THEN",
+            "CALL", "WHILE", "DO", "READ", "WRITE"};
+    String[] Class = {" ", "CONSTSYM", "VARSYM", "PROCEDURESYM", "ENDSYM", "ODDSYM", "BEGINSYM",
+             "IFSYM", "THENSYM", "CALLSYM", "WHILESYM", "DOSYM", "READSYM", "WRITESYM"};
     String[] SYM = new String[Max_Length];
     String[] ID = new String[Max_Length];
     String[] NUM = new String[Max_Length];
@@ -19,11 +24,10 @@ public class Getsym {
     int count = 0;
     char ch;
 
-    public char Getchar(String language) {
+    public void Getchar(String language) {
 
-        char ch = language.charAt(index);
+        ch = language.charAt(index);
         index++;
-        return ch;
 
     }
 
@@ -291,12 +295,26 @@ public class Getsym {
     }
 
     public static void main(String[] args) {
-        String program = ("if a");
-        String[] result = new String[1];
+//        Tools.printSYM();
 
-        System.out.println("1");
+//        Matcher matcher = Tools.number.matcher("6767&");
+//        Matcher matcher1 = Tools.word.matcher("wewr2#");
+//        Matcher matcher2 = Tools.symbol.matcher(":=");
+//        Matcher matcher3 = Tools.space.matcher("\r");
+//        System.out.println(matcher.find()+" "+matcher.end());
+//        System.out.println(matcher1.find()+" "+matcher1.end());
+//        System.out.println(matcher2.find(0)+" "+matcher2.end());
+
+//        System.out.println(matcher3.find());
+//        Matcher matcher2 = Tools.symbol.matcher("+");
+//        matcher2.lookingAt();
+//        System.out.println(matcher2.end());
+//        GetSymbol.parseSrcByRegex();
+//        SymTable.printSymTable();
+
+        GetSymbol.parseSrc();
+        SymTable.printSymTable();
     }
-
 
 }
 
