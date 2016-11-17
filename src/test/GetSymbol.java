@@ -9,15 +9,15 @@ import java.util.regex.Pattern;
  */
 public class GetSymbol {
 
-
-
     static void parseSrc() {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("in.src"))) {
             in = bufferedReader;
             while ((src = in.readLine()) != null) {
                 src = src.trim();
                 end=0;
+
                 while (end < src.length()) {
+                    System.out.println("next to parse at "+end+" :"+src.substring(end,src.length()));
                     String tmp = getWord();
                     if (!tmp.matches("\\s")) {
                         SymTable.insertEntry(tmp);
@@ -32,30 +32,43 @@ public class GetSymbol {
 
     static String getWord() {
         tmpS.append(getChar());
+
         if (isDigit(tmpS)) {
             concat();
-            while (end<src.length() && isDigit(tmpS.append(getChar()))) {
+            while (end<src.length()) {
                 concat();
-            }
-            if (tmpS.toString().equals(".")) {
-                concat();
-                while (end<src.length() && isDigit(tmpS.append(getChar()))) {
+                if (isDigit(tmpS.append(getChar()))) {
                     concat();
+                } else if (tmpS.toString().equals(".")) {
+                    concat();
+                    break;
+                } else {
+                    retract();
+                    return returnWord();
                 }
             }
-            if (end < src.length()-1) {//要加判断条件是因为如果不加，会在结束前把end减一，可能陷入死循环
-                retract();
+            while (end < src.length()) {
+                concat();
+                if (isDigit(tmpS.append(getChar()))) {
+                    concat();
+                } else {
+                    retract();
+                    return returnWord();
+                }
             }
             return returnWord();
         }
 
         if (isLetter(tmpS)) {
             concat();
-            while (end < src.length() && isDigitOrLetter(tmpS.append(getChar()))) {
+            while (end < src.length()) {
                 concat();
-            }
-            if (end < src.length()-1) {//要加判断条件是因为如果不加，会在结束前把end减一，可能陷入死循环
-                retract();
+                if (isDigitOrLetter(tmpS.append(getChar()))) {
+                    concat();
+                } else {
+                    retract();
+                    return returnWord();
+                }
             }
             return returnWord();
         }
@@ -65,10 +78,33 @@ public class GetSymbol {
             return returnWord();
         }
 
+        if (isDoubleOperator(tmpS)) {
+            concat();
+            if (tmpS.append(getChar()).toString().endsWith("=")) {
+                concat();
+                return returnWord();
+            }
+            retract();
+            return returnWord();
+        }
+
+        if (tmpS.toString().equals(":")) {
+            concat();
+            if (tmpS.append(getChar()).toString().endsWith("=")) {
+                concat();
+                return returnWord();
+            }
+            retract();
+            return returnWord();
+        }
+
         if (isSpace(tmpS)) {
             concat();
             return returnWord();
         }
+
+        System.out.println("error at "+end+" : "+tmpS);
+        System.exit(1);
 
         tmpS.delete(0,tmpS.length());
         result.delete(0,result.length());
@@ -76,19 +112,20 @@ public class GetSymbol {
     }
 
     static char getChar() {
-        System.out.println(end+" "+src.charAt(end));
         return src.charAt(end++);
     }
 
+    /**
+     *
+     */
     static void retract() {
-        end--;
         tmpS.delete(0,tmpS.length());
+        end--;
     }
 
     static void concat() {
         result.append(tmpS);
         tmpS.delete(0,tmpS.length());
-        System.out.println("result:"+result+";");
     }
 
     static boolean isDigit(StringBuffer stringBuffer) {
@@ -107,6 +144,14 @@ public class GetSymbol {
         return stringBuffer.toString().matches("[-*/=#+;,()]");
     }
 
+    static boolean isDoubleOperator(StringBuffer stringBuffer) {
+        return stringBuffer.toString().matches("[<>]");
+    }
+
+    static boolean isColon(StringBuffer stringBuffer) {
+        return stringBuffer.toString().equals(":");
+    }
+
     static boolean isSpace(StringBuffer stringBuffer) {
         return stringBuffer.toString().matches("\\s");
     }
@@ -114,7 +159,7 @@ public class GetSymbol {
     private static String returnWord() {
         String tmp = result.toString();
         result.delete(0,result.length());
-        System.out.println("result after delete:"+result+";");
+//        System.out.println(tmp+" "+result.length());
         return tmp;
     }
 

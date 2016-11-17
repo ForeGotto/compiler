@@ -1,0 +1,19 @@
+const A:=3;
+var B,C;
+procedure P;
+	VAR D;
+	procedure Q;
+		var X,Y;
+		begin
+		read(X);
+		D:=X;
+		while X<0
+		do call P;
+		end
+	begin
+	write(D);
+	call Q
+	end
+begin
+call P
+end

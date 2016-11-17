@@ -12,7 +12,7 @@ public class SymTable {
         if (index >= 0) {
             return insertKeyEntry(index);
         }
-        if (name.matches("[0-9][0-9]*.[0-9]*")) {
+        if (name.matches("[0-9][0-9]*\\.?[0-9]*")) {
             return insertNumber(name);
         }
         return insertId(name);

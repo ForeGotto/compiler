@@ -36,7 +36,7 @@ public class Tools {
     static final int LP = 18;
     static final int RP = 19;
     static final int SEMICOLON = 20;
-    static final int COLON = 21;
+    static final int COMMA = 21;
     static final int ASIGNTO = 22;
     static final int UNDER = 23;
     static final int ATMOST = 24;
@@ -51,7 +51,7 @@ public class Tools {
         IF("if"), THEN("then"), CALL("call"), WHILE("while"), DO("do"),
         READ("read"), WRITE("write"),
         PLUS("+"), MINUS("-"), MUL("*"), DIV("/"), IS("="),
-        ISNOT("#"), LP("("), RP(")"), SEMICOLON(";"), COLON(","),
+        ISNOT("#"), LP("("), RP(")"), SEMICOLON(";"), COMMA(","),
         ASIGNTO(":="), UNDER("<"), ATMOST("<="), ABOVE(">"), ATLEAST(">="),
         IDENTIFIER("identifier"), NUMBER("number");
 
@@ -107,10 +107,5 @@ public class Tools {
 
     public static int getSymType(String string) {
         return SYMBOL.indexOf(string) <= 26 ? SYMBOL.indexOf(string) : -1;
-    }
-
-    public static boolean isOperator(String c) {
-        int index = SYMBOL.indexOf(c);
-        return index >= 12 && index <= 26;
     }
 }
