@@ -15,7 +15,7 @@ public class GetSymbol {
             while ((src = in.readLine()) != null) {
                 src = src.trim();
                 end=0;
-
+                line++;
                 while (end < src.length()) {
                     System.out.println("next to parse at "+end+" :"+src.substring(end,src.length()));
                     String tmp = getWord();
@@ -33,32 +33,6 @@ public class GetSymbol {
     static String getWord() {
         tmpS.append(getChar());
 
-        if (isDigit(tmpS)) {
-            concat();
-            while (end<src.length()) {
-                concat();
-                if (isDigit(tmpS.append(getChar()))) {
-                    concat();
-                } else if (tmpS.toString().equals(".")) {
-                    concat();
-                    break;
-                } else {
-                    retract();
-                    return returnWord();
-                }
-            }
-            while (end < src.length()) {
-                concat();
-                if (isDigit(tmpS.append(getChar()))) {
-                    concat();
-                } else {
-                    retract();
-                    return returnWord();
-                }
-            }
-            return returnWord();
-        }
-
         if (isLetter(tmpS)) {
             concat();
             while (end < src.length()) {
@@ -72,6 +46,38 @@ public class GetSymbol {
             }
             return returnWord();
         }
+
+        if (isDigit(tmpS)) {
+            concat();
+            while (end<src.length()) {
+                concat();
+                if (isDigit(tmpS.append(getChar()))) {
+                    concat();
+                } else if (tmpS.toString().equals(".")) {
+                    concat();
+                    break;
+                } else if (tmpS.toString().matches("[a-zA-Z]")) {
+                    wrongFormatOfNumber();
+                } else {
+                    retract();
+                    return returnWord();
+                }
+            }
+            while (end < src.length()) {
+                concat();
+                if (isDigit(tmpS.append(getChar()))) {
+                    concat();
+                } else if (tmpS.toString().matches("[a-zA-Z]")) {
+                    wrongFormatOfNumber();
+                } else {
+                    retract();
+                    return returnWord();
+                }
+            }
+            return returnWord();
+        }
+
+
 
         if (isSingleOperaor(tmpS)) {
             concat();
@@ -103,7 +109,7 @@ public class GetSymbol {
             return returnWord();
         }
 
-        System.out.println("error at "+end+" : "+tmpS);
+        System.out.println("unexpected characters at "+line+" line "+end+" column "+" : "+tmpS);
         System.exit(1);
 
         tmpS.delete(0,tmpS.length());
@@ -159,14 +165,19 @@ public class GetSymbol {
     private static String returnWord() {
         String tmp = result.toString();
         result.delete(0,result.length());
-//        System.out.println(tmp+" "+result.length());
         return tmp;
+    }
+
+    static void wrongFormatOfNumber() {
+        System.out.println("wrong format of number at "+line+" line "+(end-result.length())+" column "+" : "+result+tmpS);
+        System.exit(1);
     }
 
     /**
      * end标记当前单词最后一个字符在src中的索引
      */
-    static int end=-1;
+    static int line=0;
+    static int end=0;
     static StringBuffer tmpS = new StringBuffer();
     static StringBuffer result=new StringBuffer();
 
@@ -226,4 +237,9 @@ public class GetSymbol {
     static BufferedReader in = null;
     static String src=null;
 
+
+    public static void main(String[] args) {
+        parseSrc();
+        SymTable.printSymTable();
+    }
 }
